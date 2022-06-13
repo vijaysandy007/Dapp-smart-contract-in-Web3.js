@@ -25,7 +25,6 @@ export class AppComponent {
    const getAccount = await this.metamask.request({ method: 'eth_requestAccounts' }).then((account:any)=>{
     this.getAccount = account
     this.isGetAccount = true
-    console.log(account);
     
    })
     
@@ -36,8 +35,6 @@ export class AppComponent {
     await web3.eth.personal.sign('Are you want to connect this website', this.getAccount[0], this.getAccount[0]).then((result:any)=>{
 
      this.signature = result
-
-     console.log(result)
 
      resolve(this.signature)
     })
