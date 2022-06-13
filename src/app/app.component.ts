@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import Web3 from 'web3'
 
@@ -9,15 +9,18 @@ declare var window:any
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'web3';
   getAccount:any  
   metamask;
   isGetAccount:boolean = false;
   signature:any
 
- async connectMetamask(){
+  ngOnInit(){
+    this.detectedChainChanged()
+  }
 
+ async connectMetamask(){
   const metaconnect = window.ethereum.providers ? window.ethereum.providers.find((provider: any) => provider.isMetaMask): window.ethereum._metamask ? window.ethereum : 0 ;
   this.metamask = metaconnect
    const web3 =  new Web3(this.metamask)
@@ -27,19 +30,44 @@ export class AppComponent {
     this.isGetAccount = true
     
    })
-    
+ 
+   this.getSignature()
+  
+  }
+
+  async detectedChainChanged(){
+
    return new Promise(async(resolve, reject)=>{
 
-    const web3 = new Web3(this.metamask)
+    await window.ethereum.on('accountsChanged', (accounts:any)=>{
+    resolve(this.getAccount = '')
 
-    await web3.eth.personal.sign('Are you want to connect this website', this.getAccount[0], this.getAccount[0]).then((result:any)=>{
+    this.getAccount = accounts
 
-     this.signature = result
+     this.getSignature().then((data:any)=>{
+    this.signature =data;
+    
+   })
 
-     resolve(this.signature)
     })
    })
+  }
+
+  async getSignature(){
+    return new Promise(async(resolve, reject)=>{
+
+      const web3 = new Web3(this.metamask)
   
+      await web3.eth.personal.sign('Are you want to connect this website', this.getAccount[0], this.getAccount[0]).then((result:any)=>{
+  
+       this.signature = result
+  
+       resolve(this.signature)
+
+       console.log(this.signature);
+       
+      })
+     })
   }
  
 }
