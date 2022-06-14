@@ -15,7 +15,9 @@ export class AppComponent implements OnInit {
   metamask;
   isGetAccount: boolean = false;
   signature: any;
-  balance: any
+  balance: any;
+  transcationHash:any;
+  receipt:any
 
   ngOnInit() {
     this.detectedChainChanged()
@@ -78,6 +80,28 @@ export class AppComponent implements OnInit {
       this.balance = numberOf.toFixed(4)
 
     })
+  }
+
+  async sendTranscation(){
+    const web3 = new Web3(this.metamask)
+    
+    await web3.eth.sendTransaction({
+      from: this.getAccount[0],
+      to: '0xE8142BDB8D9fC88450b2485f952bED32A5FB5265',
+      value:'1000000000000000'
+    }).on('transactionHash', (hash)=>{
+      this.transcationHash = hash
+    }).on('receipt', (receipt)=>{
+     console.log(receipt);
+     
+    }).on('confirmation', (confirmation)=>{
+      console.log(confirmation);
+      
+    }).on('error', (error)=>{
+      console.log(error);
+      
+    })
+
   }
 
 }
