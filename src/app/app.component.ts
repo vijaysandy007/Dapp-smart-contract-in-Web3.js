@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import Web3 from 'web3'
 
-declare var window:any
+declare var window: any
 
 @Component({
   selector: 'app-root',
@@ -11,63 +11,73 @@ declare var window:any
 })
 export class AppComponent implements OnInit {
   title = 'web3';
-  getAccount:any  
+  getAccount: any
   metamask;
-  isGetAccount:boolean = false;
-  signature:any
+  isGetAccount: boolean = false;
+  signature: any;
+  balance: any
 
-  ngOnInit(){
+  ngOnInit() {
     this.detectedChainChanged()
   }
 
- async connectMetamask(){
-  const metaconnect = window.ethereum.providers ? window.ethereum.providers.find((provider: any) => provider.isMetaMask): window.ethereum._metamask ? window.ethereum : 0 ;
-  this.metamask = metaconnect
-   const web3 =  new Web3(this.metamask)
+  async connectMetamask() {
+    const findProvider = window.ethereum.providers ? window.ethereum.providers.then((provider: any) => provider.isMetaMask) : window.ethereum._metamask ? window.ethereum : 0;
+    this.metamask = findProvider
+    const web3 = new Web3(this.metamask)
 
-   const getAccount = await this.metamask.request({ method: 'eth_requestAccounts' }).then((account:any)=>{
-    this.getAccount = account
-    this.isGetAccount = true
-    
-   })
- 
-   this.getSignature()
-  
-  }
-
-  async detectedChainChanged(){
-
-   return new Promise(async(resolve, reject)=>{
-
-    await window.ethereum.on('accountsChanged', (accounts:any)=>{
-    resolve(this.getAccount = '')
-
-    this.getAccount = accounts
-
-     this.getSignature().then((data:any)=>{
-    this.signature =data;
-    
-   })
+    const getAccount = await  this.metamask.request({ method: 'eth_requestAccounts' }).then((account: any) => {
+      this.getAccount = account
+      this.isGetAccount = true
 
     })
-   })
+
+    // const getAccount = await web3.send()
+
+    this.getSignature()
+    this.checkBalance()
+
   }
 
-  async getSignature(){
-    return new Promise(async(resolve, reject)=>{
+  async detectedChainChanged() {
+    
+    return new Promise(async (resolve, reject) => {
+
+      await window.ethereum.on('accountsChanged', (accounts: any) => {
+        resolve(this.getAccount = accounts)
+
+        this.getSignature().then((data: any) => {
+          this.signature = data;
+
+        })
+
+      })
+    })
+  }
+
+  async getSignature() {
+    return new Promise(async (resolve, reject) => {
 
       const web3 = new Web3(this.metamask)
-  
-      await web3.eth.personal.sign('Are you want to connect this website', this.getAccount[0], this.getAccount[0]).then((result:any)=>{
-  
-       this.signature = result
-  
-       resolve(this.signature)
 
-       console.log(this.signature);
-       
+      await web3.eth.personal.sign('Are you want to connect this website', this.getAccount[0], this.getAccount[0]).then((result: any) => {
+
+        this.signature = result
+
+        resolve(this.signature)
+
       })
-     })
+    })
   }
- 
+
+  async checkBalance(){
+    const web3 = new Web3(this.metamask)
+    const balance = await web3.eth.getBalance(this.getAccount[0]).then((balance) => {
+      const fromwei = web3.utils.fromWei(balance)
+      const numberOf = +(balance)
+      this.balance = numberOf.toFixed(4)
+
+    })
+  }
+
 }

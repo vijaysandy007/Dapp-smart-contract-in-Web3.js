@@ -1,5 +1,9 @@
-<button (click)="connectMetamask()">Connect MetasMask</button>
+<button (click)="connectMetamask()">Connect MetasMask</button>&nbsp; 
+<button>Send Transcation</button>
 
-<h4 *ngIf="isGetAccount">{{getAccount[0]}}</h4>
 
-<h4>{{signature}}</h4>
+
+<h4 *ngIf="isGetAccount"> Wallet Address: {{getAccount[0]}}</h4>
+
+<h4> Signature: {{signature}}</h4>
+<h4> Wallet Balance: {{balance}}</h4>
