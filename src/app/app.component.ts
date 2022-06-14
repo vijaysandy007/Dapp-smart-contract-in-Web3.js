@@ -102,6 +102,38 @@ export class AppComponent implements OnInit {
       
     })
 
+    this.retriveTranscation(web3, this.transcationHash)
+
+  }
+
+  async retriveTranscation(web3, transcationHash){
+
+    let pollInterval = 5000;
+    let elapsedTime = 0;
+
+    while(true){
+      let receipt
+
+      try {
+        
+        receipt = await web3.eth.getTransactionReceipt(transcationHash)
+
+      } catch (error) {
+         console.log('error retrieving transaction receipt: ' + error);
+         
+      }
+
+       if(receipt){
+        return receipt;
+       }
+       else if(elapsedTime % (pollInterval) === 0){
+        console.log("still waiting for transaction receipt after " + elapsedTime/1000 + " seconds");
+       }
+
+       await web3.util.sleep(pollInterval)
+       elapsedTime +=pollInterval
+    }
+    
   }
 
 }
